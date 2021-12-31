@@ -49,4 +49,8 @@ contract Lottery {
         require(players.length > 0);
         _;
     }
+
+    function getPlayers() public view returns (address[] memory) {
+        return players;
+    }
 }
