@@ -15,4 +15,14 @@ contract Lottery {
 
         players.push(msg.sender);
     }
+
+    function random() private view returns (uint256) {
+        return
+            uint256(
+                keccak256(
+                    // use abi.encode to merge 3 inputs
+                    abi.encode(block.difficulty, block.timestamp, players)
+                )
+            );
+    }
 }
