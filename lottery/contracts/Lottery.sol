@@ -34,5 +34,8 @@ contract Lottery {
         // cast `address` to `payable address`
         // https://ethereum.stackexchange.com/questions/65693/how-to-cast-address-to-address-payable-in-solidity-0-5-0
         payable(winner).transfer(address(this).balance);
+
+        // reset
+        players = new address[](0); // address array with length zero
     }
 }
