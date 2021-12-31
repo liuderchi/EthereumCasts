@@ -27,6 +27,12 @@ contract Lottery {
     }
 
     function pickWinner() public {
+        // auth check
+        require(msg.sender == manager);
+
+        // validation
+        require(players.length > 0);
+
         // find winner
         address winner = players[random() % players.length];
 
