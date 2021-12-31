@@ -25,4 +25,11 @@ contract Lottery {
                 )
             );
     }
+
+    function pickWinner() public {
+        // find winner
+        address winner = players[random() % players.length];
+
+        // TODO send ether to winner
+    }
 }
