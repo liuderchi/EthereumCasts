@@ -30,6 +30,9 @@ contract Lottery {
         // find winner
         address winner = players[random() % players.length];
 
-        // TODO send ether to winner
+        // transfer reward
+        // cast `address` to `payable address`
+        // https://ethereum.stackexchange.com/questions/65693/how-to-cast-address-to-address-payable-in-solidity-0-5-0
+        payable(winner).transfer(address(this).balance);
     }
 }
