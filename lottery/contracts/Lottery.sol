@@ -26,13 +26,7 @@ contract Lottery {
             );
     }
 
-    function pickWinner() public {
-        // auth check
-        require(msg.sender == manager);
-
-        // validation
-        require(players.length > 0);
-
+    function pickWinner() public requireManager requireNonEmptyPlayers {
         // find winner
         address winner = players[random() % players.length];
 
@@ -43,5 +37,16 @@ contract Lottery {
 
         // reset
         players = new address[](0); // address array with length zero
+    }
+
+    // as repeated code template
+    modifier requireManager() {
+        // auth check
+        require(msg.sender == manager);
+        _; // placeholder for remaining code from modifier user
+    }
+    modifier requireNonEmptyPlayers() {
+        require(players.length > 0);
+        _;
     }
 }
