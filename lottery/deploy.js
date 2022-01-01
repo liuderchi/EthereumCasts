@@ -19,7 +19,7 @@ const deploy = async () => {
   const result = await new web3.eth.Contract(compiled.abi)
     .deploy({
       data: compiled.evm.bytecode.object,
-      arguments: ['Hi there!'],
+      arguments: [],
     })
     .send({ from: accounts[0], gas: 1000000 });
 
