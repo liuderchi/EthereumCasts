@@ -6,6 +6,8 @@ const compiled = require('../compile');
 // inject ganache provider to connect to test network
 const web3 = new Web3(ganache.provider());
 
+const MIN_VALUE_WEI = web3.utils.toWei('0.01');
+
 describe('Lottery contract', () => {
   let lottery;
   let accounts = [];
@@ -63,5 +65,52 @@ describe('Lottery contract', () => {
     assert.equal(accounts[1], players[1]);
     assert.equal(accounts[2], players[2]);
     assert.equal(3, players.length);
+  });
+
+  it('requires a minimum amount of ether to enter', async () => {
+    try {
+      await lottery.methods.enter().send({
+        from: accounts[0],
+        value: MIN_VALUE_WEI,
+      });
+      assert(false);
+    } catch (err) {
+      assert.equal(
+        err.message,
+        'VM Exception while processing transaction: revert',
+      );
+    }
+  });
+
+  it('requires a manager to call pickWinner (`requireManager` modifier)', async () => {
+    try {
+      await lottery.methods.enter().send({
+        from: accounts[1],
+        value: web3.utils.toWei('0.02'),
+      });
+      await lottery.methods.pickWinner().send({
+        from: accounts[1],
+      });
+      assert(false);
+    } catch (err) {
+      assert.equal(
+        err.message,
+        'VM Exception while processing transaction: revert',
+      );
+    }
+  });
+
+  it('failed to pick winner if no one had entered (`requireNonEmptyPlayers` modifier)', async () => {
+    try {
+      await lottery.methods.pickWinner().send({
+        from: accounts[0],
+      });
+      assert(false);
+    } catch (err) {
+      assert.equal(
+        err.message,
+        'VM Exception while processing transaction: revert',
+      );
+    }
   });
 });
