@@ -113,4 +113,35 @@ describe('Lottery contract', () => {
       );
     }
   });
+
+  it('sends money to the winner and resets the players array', async () => {
+    const player = accounts[0];
+    await lottery.methods.enter().send({
+      from: player,
+      value: web3.utils.toWei('2'),
+    });
+
+    const initialBalance = await web3.eth.getBalance(player);
+    await lottery.methods.pickWinner().send({ from: player });
+    const finalBalance = await web3.eth.getBalance(player);
+    const difference = finalBalance - initialBalance;
+
+    // difference is less than 2 since
+    // some part of it is used as gas in transaction
+    assert(difference > web3.utils.toWei('1.8'));
+    console.log(
+      `estimated gas used in send money transaction: ${Number(
+        web3.utils.toWei('2') - difference,
+      )} wei`,
+    );
+
+    // check players arraay is empty
+    const players = await lottery.methods.getPlayers().call({
+      from: player,
+    });
+    assert.equal(players.length, 0);
+    // check lotter balance is zero
+    const lotteryBalance = await web3.eth.getBalance(lottery.options.address);
+    assert.equal(lotteryBalance, 0);
+  });
 });
