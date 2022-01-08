@@ -1,16 +1,17 @@
 import { useEffect } from 'react';
+import web3 from './web3';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
   useEffect(() => {
     const fetchAccounts = async () => {
-      if (window.ethereum) {
-        // request would trigger metamask permission check for current domain
-        const accounts = await window.ethereum.request({
-          method: 'eth_requestAccounts',
+      if (web3) {
+        const accounts = await web3.eth.getAccounts();
+        console.log({
+          web3Version: web3.version,
+          accounts,
         });
-        console.log({ accounts });
       }
     };
     fetchAccounts();
