@@ -1,7 +1,21 @@
+import { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      if (window.ethereum) {
+        // request would trigger metamask permission check for current domain
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        });
+        console.log({ accounts });
+      }
+    };
+    fetchAccounts();
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
