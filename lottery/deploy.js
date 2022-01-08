@@ -23,6 +23,7 @@ const deploy = async () => {
     })
     .send({ from: accounts[0], gas: 1000000 });
 
+  console.log(`Contract ABI:\n${JSON.stringify(compiled.abi, null, 2)}`);
   console.log('Contract deployed to', result.options.address);
 
   provider.engine.stop();
