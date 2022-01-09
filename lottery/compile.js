@@ -21,6 +21,14 @@ const input = {
   },
 };
 
-module.exports = JSON.parse(solc.compile(JSON.stringify(input))).contracts[
+const compiled = JSON.parse(solc.compile(JSON.stringify(input))).contracts[
   'Lottery.sol'
 ].Lottery;
+
+if (process.env.ABI) {
+  fs.writeFileSync('lottery.abi.json', JSON.stringify(compiled.abi, null, 2), {
+    encoding: 'utf-8',
+  });
+}
+
+module.exports = compiled;

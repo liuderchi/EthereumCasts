@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "compile": "node compile.js",
+    "compile:abi": "ABI=1 node compile.js",
     "test": "mocha tests",
     "deploy": "node deploy.js"
   },
