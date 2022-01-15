@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { useState, useEffect } from 'react';
 import web3 from './web3';
 import lottery from './lottery';
@@ -15,6 +16,7 @@ function App() {
 
   // base data
   const [accounts, setAccounts] = useState([]);
+  const [isDebug, setIsDebug] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +37,16 @@ function App() {
       }
     };
     fetchData();
+  }, []);
+  useEffect(() => {
+    if (location) {
+      try {
+        const url = new URL(location);
+        if (url.searchParams.get('debug')) {
+          setIsDebug(true);
+        }
+      } catch (error) {}
+    }
   }, []);
 
   const onSubmit = async (event) => {
@@ -103,8 +115,12 @@ function App() {
 
       <h1>{message}</h1>
 
-      <br />
-      <pre>{JSON.stringify({ players, balance }, null, 2)}</pre>
+      {isDebug && (
+        <>
+          <br />
+          <pre>{JSON.stringify({ players, balance, accounts }, null, 2)}</pre>
+        </>
+      )}
     </div>
   );
 }
