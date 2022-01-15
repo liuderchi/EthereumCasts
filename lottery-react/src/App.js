@@ -13,19 +13,25 @@ function App() {
   const [value, setValue] = useState('');
   const [message, setMessage] = useState('');
 
+  // base data
+  const [accounts, setAccounts] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       if (web3) {
-        const [managerData, playersData, balanceData] = await Promise.all([
-          // Note: we could skip passing an account to `from` arg,
-          // because metamask by default use first account to call
-          lottery.methods.manager().call(),
-          lottery.methods.getPlayers().call(),
-          web3.eth.getBalance(lottery.options.address),
-        ]);
+        const [managerData, playersData, balanceData, accountsData] =
+          await Promise.all([
+            // Note: we could skip passing an account to `from` arg,
+            // because metamask by default use first account to call
+            lottery.methods.manager().call(),
+            lottery.methods.getPlayers().call(),
+            web3.eth.getBalance(lottery.options.address),
+            web3.eth.getAccounts(),
+          ]);
         setManager(managerData);
         setPlayers(playersData);
         setBalance(balanceData);
+        setAccounts(accountsData);
       }
     };
     fetchData();
@@ -33,7 +39,6 @@ function App() {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    const accounts = await web3.eth.getAccounts();
     const account = accounts[0];
 
     if (value && account) {
@@ -49,6 +54,21 @@ function App() {
         setMessage(`Something wrong! ${error.message}`);
         console.error(error);
       }
+    }
+  };
+
+  const onClickPickWinner = async () => {
+    const account = accounts[0];
+    try {
+      setMessage('Waiting on transaction success...');
+      const transactionResult = await lottery.methods.pickWinner().send({
+        from: account,
+      });
+      console.log({ blockHash: transactionResult?.blockHash });
+      setMessage('A winner has been picked!');
+    } catch (error) {
+      setMessage(`Something wrong! ${error.message}`);
+      console.error(error);
     }
   };
 
@@ -72,6 +92,15 @@ function App() {
         </div>
         <button disabled={!value}>Enter</button>
       </form>
+
+      {accounts[0] && manager && accounts[0] === manager && (
+        <>
+          <hr />
+          <h4>Ready to pick a winner?</h4>
+          <button onClick={onClickPickWinner}>Pick a winner!</button>
+        </>
+      )}
+
       <h1>{message}</h1>
 
       <br />
